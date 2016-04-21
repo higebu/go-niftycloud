@@ -866,12 +866,10 @@ type Image struct {
 
 // The ModifyImageAttribute request parameters.
 type ModifyImageAttribute struct {
-	AddUsers     []string
-	RemoveUsers  []string
-	AddGroups    []string
-	RemoveGroups []string
-	ProductCodes []string
-	Description  string
+	Description       string
+	ImageName         string
+	NiftyContactUrl   string
+	DetailDescription string
 }
 
 // The NiftyAssociateImage request parameters.
@@ -972,39 +970,20 @@ func (compute *Compute) ModifyImageAttribute(imageId string, options *ModifyImag
 	params := makeParams("ModifyImageAttribute")
 	params["ImageId"] = imageId
 	if options.Description != "" {
-		params["Description.Value"] = options.Description
+		params["Attribute"] = "description"
+		params["Value"] = options.Description
 	}
-
-	if options.AddUsers != nil {
-		for i, user := range options.AddUsers {
-			p := fmt.Sprintf("LaunchPermission.Add.%d.UserId", i+1)
-			params[p] = user
-		}
+	if options.ImageName != "" {
+		params["Attribute"] = "imageName"
+		params["Value"] = options.ImageName
 	}
-
-	if options.RemoveUsers != nil {
-		for i, user := range options.RemoveUsers {
-			p := fmt.Sprintf("LaunchPermission.Remove.%d.UserId", i+1)
-			params[p] = user
-		}
+	if options.NiftyContactUrl != "" {
+		params["Attribute"] = "niftyContactUrl"
+		params["Value"] = options.NiftyContactUrl
 	}
-
-	if options.AddGroups != nil {
-		for i, group := range options.AddGroups {
-			p := fmt.Sprintf("LaunchPermission.Add.%d.Group", i+1)
-			params[p] = group
-		}
-	}
-
-	if options.RemoveGroups != nil {
-		for i, group := range options.RemoveGroups {
-			p := fmt.Sprintf("LaunchPermission.Remove.%d.Group", i+1)
-			params[p] = group
-		}
-	}
-
-	if options.ProductCodes != nil {
-		addParamsList(params, "ProductCode", options.ProductCodes)
+	if options.DetailDescription != "" {
+		params["Attribute"] = "detailDescription"
+		params["Value"] = options.DetailDescription
 	}
 
 	resp = &SimpleResp{}
