@@ -125,7 +125,7 @@ type xmlErrors struct {
 var timeNow = time.Now
 
 func (compute *Compute) query(params map[string]string, resp interface{}) error {
-	params["Version"] = "1.19"
+	params["Version"] = "2.2"
 	params["Timestamp"] = timeNow().In(time.UTC).Format(time.RFC3339)
 	endpoint, err := url.Parse(compute.Region.ComputeEndpoint)
 	if err != nil {
@@ -874,6 +874,19 @@ type ModifyImageAttribute struct {
 	Description  string
 }
 
+// The NiftyAssociateImage request parameters.
+type NiftyAssociateImage struct {
+	ImageId         string
+	IsPublic        bool
+	IsRedistribute  bool
+	DistributionIds []string
+}
+
+type NiftyAssociateImageResp struct {
+	RequestId string `xml:"requestId"`
+	Return    string `xml:"return"`
+}
+
 // Creates an image from an instance that is either running or stopped.
 //
 // See http://cloud.nifty.com/api/rest/CreateImage.htm for more details.
@@ -998,6 +1011,33 @@ func (compute *Compute) ModifyImageAttribute(imageId string, options *ModifyImag
 	err = compute.query(params, resp)
 	if err != nil {
 		resp = nil
+	}
+
+	return
+}
+
+// NiftyAssociateImage associate images.
+//
+// See http://cloud.nifty.com/api/rest/NiftyAssociateImage.htm for more details.
+func (compute *Compute) NiftyAssociateImage(options *NiftyAssociateImage) (resp *NiftyAssociateImageResp, err error) {
+	params := makeParams("NiftyAssociateImage")
+	params["ImageId"] = options.ImageId
+	if options.IsPublic {
+		params["IsPublic"] = "true"
+	} else {
+		params["IsPublic"] = "false"
+	}
+	if options.IsRedistribute {
+		params["IsRedistribute"] = "true"
+	}
+	if len(options.DistributionIds) > 0 {
+		addParamsList(params, "DistributionId", options.DistributionIds)
+	}
+
+	resp = &NiftyAssociateImageResp{}
+	err = compute.query(params, resp)
+	if err != nil {
+		return nil, err
 	}
 
 	return
