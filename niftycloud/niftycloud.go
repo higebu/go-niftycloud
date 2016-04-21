@@ -39,6 +39,14 @@ var JPEast2 = Region{
 	false,
 }
 
+var JPEast3 = Region{
+	"jp-east-3",
+	"https://east-3.cp.cloud.nifty.com/api/",
+	"https://ncss.nifty.com",
+	false,
+	false,
+}
+
 var JPWest = Region{
 	"jp-west-1",
 	"https://west-1.cp.cloud.nifty.com/api/",
@@ -47,10 +55,20 @@ var JPWest = Region{
 	true,
 }
 
+var USEast = Region{
+	"us-east-1",
+	"https://us-east-1.uscp.cloud.nifty.com/api/",
+	"https://ncss.nifty.com",
+	true,
+	true,
+}
+
 var Regions = map[string]Region{
 	JPEast.Name:  JPEast,
 	JPEast2.Name: JPEast2,
+	JPEast3.Name: JPEast3,
 	JPWest.Name:  JPWest,
+	USEast.Name:  USEast,
 }
 
 type Auth struct {
